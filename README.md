@@ -1,5 +1,8 @@
 # dawgtools
 
+This package is intended to be used in the am-dawg-tool environment.
+Some setup is required before the first use...
+
 ## installation and use
 
 The commands below are intended to be run from within a bash shell. VS
@@ -15,10 +18,10 @@ bash
 
 ### uv
 
-This package is intended to be run using uv in the am-dawg-tool
-environment. The first step is to install uv.
+We will use uv to manage python versions and dependencies. The first
+step is to install uv.
 
-See https://docs.astral.sh/uv/getting-started/installation/
+See https://docs.astral.sh/uv/getting-started/installation/ for details.
 
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
