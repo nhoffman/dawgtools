@@ -63,11 +63,13 @@ few seconds the first time; it's faster on subsequent runs.
 uvx --from https://github.com/nhoffman/dawgtools.git dawgtools --help
 ```
 
-If you plan to use dawgtools frequently, you can install it using `uv tool`:
+To execute a subcommand, simply include extra arguments:
+
 
 ```
-TODO
+uvx --from https://github.com/nhoffman/dawgtools.git dawgtools sql2csv --help
 ```
+
 
 For development, run a command from within a cloned version of the
 repository:

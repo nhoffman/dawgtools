@@ -71,7 +71,8 @@ def nonull(row, maxchars=1000):
 
 
 def build_parser(parser):
-    parser.add_argument('infile', help="Input file containing an sql command")
+    parser.add_argument('-q', '--query', help="sql command")
+    parser.add_argument('-i', '--infile', help="Input file containing an sql command")
     parser.add_argument('-o', '--outfile',
                         help="""Output file name; uses gzip compression
                         if ends with .gz or stdout if not provided.""")
@@ -94,16 +95,22 @@ def action(args):
     else:
         environment = {}
 
-    with (open(args.infile, encoding='utf-8') as sqlfile,
-          tempfile.NamedTemporaryFile('w', delete=False) as sqltemp):
-        query_text = sqlfile.read().format(**environment)
+    if args.query:
+        query_text = args.query
+    elif args.infile:
+        with open(args.infile, encoding='utf-8') as sqlfile:
+            query_text = sqlfile.read().format(**environment)
+    else:
+        print('provide either -q/--query or -i/--infile')
+        return 1
 
-        if args.print_query:
-            print(query_text)
+    if args.print_query:
+        print(query_text)
 
-        if args.dry_run:
-            return
+    if args.dry_run:
+        return
 
+    with tempfile.NamedTemporaryFile('w', delete=False) as sqltemp:
         sqltemp.write('SET NOCOUNT ON;\n\n')
         sqltemp.write(query_text)
 
