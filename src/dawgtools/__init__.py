@@ -7,6 +7,7 @@ Update me!
 import glob
 from os import path
 
+__version__ = '0.1'
 _data = path.join(path.dirname(__file__), 'data')
 
 
@@ -28,10 +29,4 @@ def package_data(fname, pattern=None):
 
     return pth
 
-
-try:
-    with open(path.join(path.dirname(__file__), 'data', 'ver')) as f:
-        __version__ = f.read().strip().replace('-', '+', 1).replace('-', '.')
-except Exception as e:
-    __version__ = ''
 

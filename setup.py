@@ -1,17 +1,5 @@
 import os
-import subprocess
 import setuptools
-
-subprocess.call(
-    ('mkdir -p src/dawgtools/data && '
-     'touch src/dawgtools/data/ver && '
-     'git describe --tags --dirty > src/dawgtools/data/ver.tmp '
-     '&& mv src/dawgtools/data/ver.tmp src/dawgtools/data/ver '
-     '|| rm -f src/dawgtools/data/ver.tmp'),
-    shell=True, stderr=open(os.devnull, "w"))
-
-with open('src/dawgtools/data/ver') as f:
-    version = f.read().strip() or '0.0.0'
 
 package_data = ['data/*']
 
@@ -20,10 +8,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="dawgtools",
-    version=version,
-    author="Example Author",
-    author_email="author@example.com",
-    description="A small example package",
+    version='0.1',
+    author="Noah Hoffman",
+    author_email="ngh2@uw.edu",
+    description="Utilities for working with DAWG",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://www.example.com",
@@ -41,6 +29,8 @@ setuptools.setup(
     entry_points={
         'console_scripts': ['dawgtools = dawgtools.main:main']
     },
-    python_requires=">=3.8",
-    install_requires=[],
+    python_requires=">=3.9",
+    install_requires=[
+        'openai'
+    ],
 )
