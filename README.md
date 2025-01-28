@@ -69,8 +69,7 @@ uvx --from https://github.com/nhoffman/dawgtools.git dawgtools --help
 To execute a subcommand, simply include extra arguments:
 
 ```
-$ uvx --from https://github.com/nhoffman/dawgtools.git dawgtools sql2csv -q 'select 1 as col1, 2 as col2' -o test.csv
-$ cat test.csv
+$ uvx --from https://github.com/nhoffman/dawgtools.git dawgtools sql2csv -q 'select 1 as col1, 2 as col2'
 col1,col2
 1,2
 ```
