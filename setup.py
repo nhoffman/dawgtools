@@ -11,13 +11,13 @@ setuptools.setup(
     version='0.1',
     author="Noah Hoffman",
     author_email="ngh2@uw.edu",
-    description="Utilities for working with DAWG",
+    description="Utilities for the am-dawg-tool environment",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://www.example.com",
-    # project_urls={
-    #     "Bug Tracker": "https://github.com/pypa/sampleproject/issues",
-    # },
+    url="https://github.com/nhoffman/dawgtools",
+    project_urls={
+        "Bug Tracker": "https://github.com/nhoffman/dawgtools/issues",
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
