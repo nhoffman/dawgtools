@@ -25,7 +25,8 @@ See https://docs.astral.sh/uv/getting-started/installation/ for details.
 
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
-exit # quit this shell and start a new one after installing
+curl -LsSf https://raw.githubusercontent.com/nhoffman/dawgtools/refs/heads/main/update-bashrc.bash | bash
+source "$HOME/.local/bin/env"
 ```
 
 The command above installs ``uv`` and ``uvx`` commands to
