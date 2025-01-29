@@ -1,12 +1,15 @@
 #!/usr/bin/sh
 
-if [ grep -sq .local/bin/env "$HOME/.bashrc" ]; then
+if [ grep -q -s .local/bin/env "$HOME/.bashrc" ]; then
    echo ".bashrc is up to date"
    cat "$HOME/.bashrc"
    exit
 fi
 
-# cat >> .bashrc <<EOF
+cat >> .bashrc <<EOF
 
-# . "$HOME/.local/bin/env"
-# EOF
+. "$HOME/.local/bin/env"
+EOF
+
+echo "contents of $HOME/.bashrc"
+cat "$HOME/.bashrc"
