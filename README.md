@@ -18,20 +18,35 @@ bash
 
 ### uv
 
-We will use uv to manage python versions and dependencies. The first
+We will use uv to manage python versions and dependencies. The
+instructions in this section only need to be completed once. The first
 step is to install uv.
 
-See https://docs.astral.sh/uv/getting-started/installation/ for details.
+See https://docs.astral.sh/uv/getting-started/installation/ for
+details on uv installation.
+
+The following commands install ``uv`` and ``uvx`` to
+``$HOME/.local/bin``. They also modify your bash profile
+(``~/.bashrc``) to add this directory to your PATH the next time you
+start a shell.
 
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
-curl -LsSf https://raw.githubusercontent.com/nhoffman/dawgtools/refs/heads/main/update-bashrc.bash | bash
-source "$HOME/.local/bin/env"
 ```
 
-The command above installs ``uv`` and ``uvx`` commands to
-``$HOME/.local/bin``. It also modifies ``~/.bashrc`` to add this
-directory to your PATH the next time you start a shell.
+The uv installer fails to update `$HOME/.bashrc` for some users; let's
+make sure this is done.
+
+```
+curl -LsSf https://raw.githubusercontent.com/nhoffman/dawgtools/refs/heads/main/update-bashrc.bash | bash
+```
+
+This command allows you to start using uv immediately; you can also
+exit and start a new bash shell.
+
+```
+source "$HOME/.local/bin/env"
+```
 
 Once uv is installed, install a recent version of python:
 
@@ -45,7 +60,8 @@ Confirm which python versions are available:
 uv python list
 ```
 
-Run the uv-managed version of python (uv will choose the most recent version by default):
+Run the uv-managed version of python (uv will choose the most recent
+version by default):
 
 ```
 $ uv run python --version
