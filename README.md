@@ -100,7 +100,7 @@ For development, run a command from within a cloned version of the
 repository:
 
 ```
-uv run --with . dawgtools --help
+uv run --with-editable . dawgtools --help
 ```
 
 Or with a specific python version:
@@ -109,3 +109,8 @@ Or with a specific python version:
 uv run --python 3.12 --with . dawgtools --help
 ```
 
+Run tests:
+
+```
+uv run --with-editable . --with pytest pytest
+```

@@ -37,20 +37,9 @@ from subprocess import run, CalledProcessError
 import tempfile
 import logging
 
+from dawgtools.utils import StdOut
+
 log = logging.getLogger(__name__)
-
-
-class StdOut:
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def __enter__(self):
-        self.fobj = sys.stdout
-        return self.fobj
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
-
 
 # Increase CSV field size limit to maximim possible
 # https://stackoverflow.com/a/15063941

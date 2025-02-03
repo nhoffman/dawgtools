@@ -31,6 +31,8 @@ setuptools.setup(
     },
     python_requires=">=3.9",
     install_requires=[
-        'openai'
+        'jinja2',
+        'openai',
+        'pyodbc',
     ],
 )

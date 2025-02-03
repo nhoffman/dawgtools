@@ -1,25 +1,16 @@
-import boto3
+import sys
 
 
-def get_cognito_ids(client, user_pool_id):
-    """
-    Return a sequence of (netid, cognito_id)
+class StdOut:
+    def __init__(self, *args, **kwargs):
+        pass
 
-    example usage:
+    def __enter__(self):
+        self.fobj = sys.stdout
+        return self.fobj
 
-    client = boto3.client('cognito-idp')
-    mapping = get_cognito_ids(client, 'us-west-2_wfuighQ6A')
-    """
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
 
-    paginator = client.get_paginator('list_users')
-    user_iterator = paginator.paginate(
-        UserPoolId=user_pool_id,
-        AttributesToGet=[
-            'sub',
-        ])
 
-    for page in user_iterator:
-        for user in page['Users']:
-            netid = user['Username'].split('_')[-1]
-            cognito_id = user['Attributes'][0]['Value']
-            yield (netid, cognito_id)
+
