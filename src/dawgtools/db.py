@@ -14,23 +14,25 @@ CONNECTION_STRING = ';'.join([
 ])
 
 
-def render_template(query: str, params: dict) -> tuple[str, list]:
-    """Renders a jinja2 template using the given parameters using
-    jinjasql and return the rendered SQL and parameters
+def render_template(template: str, params: dict) -> tuple[str, list]:
+    """Renders a query template that uses a combination of python
+    string formatting directives and jinja2 expressions using the
+    given parameters. Returns a tuple of the modified template with
+    "?" placeholders and a list of positional parameters.
 
     """
 
-    template = Template(query)
-    context = {key: '?' for key in params.keys()}
+    rendered = Template(template).render(params)
 
-    # Render the template, replacing all variables with '?'
-    rendered = template.render(**context)
+    # Find all string formatting directives in the rendered output and create a list of values
+    format_directive_pattern = re.compile(r'%\((.*?)\)s')
+    keys = format_directive_pattern.findall(rendered)
+    positional_params = [params[key] for key in keys]
 
-    # Gather the positional arguments in the order they appear
-    template_variables = re.findall(r'{{\s*(\w+)\s*}}', query)
-    positional_args = [params[var] for var in template_variables if var in params]
+    # Replace each string formatting directive with a question mark (?)
+    modified_template = format_directive_pattern.sub('?', rendered)
 
-    return rendered, positional_args
+    return modified_template, positional_params
 
 
 def sql_query(query: str, params: dict = None) -> tuple[list, list]:

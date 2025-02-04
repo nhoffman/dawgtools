@@ -1,11 +1,15 @@
 """Execute an sql query.
 
-Renders a jinja2 query template string into a parameterized sql query.
+Renders a query template string into a parameterized sql query.
+
+Use a combination of python string formatting directives (for variable
+substituion) and jinja2 expressions (for conditional expressions).
 
 For example:
 
-  $ dawgtools -v query -q "select 'foo' as col1, {{ barval }} as col2" -p barval=bar
+  $ dawgtools -v query -q "select 'foo' as col1, %(barval)s as col2" -p barval=bar
   {"col1": "foo", "col2": "bar"}
+
 """
 
 import argparse

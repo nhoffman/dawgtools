@@ -1,8 +1,6 @@
 import os
 import setuptools
 
-package_data = ['data/*']
-
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
@@ -24,7 +22,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     package_dir={'': 'src'},
-    package_data={'dawgtools': package_data},
+    package_data={'dawgtools': ['data/*', 'queries/*.sql']},
     packages=setuptools.find_packages(where="src"),
     entry_points={
         'console_scripts': ['dawgtools = dawgtools.main:main']
