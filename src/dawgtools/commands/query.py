@@ -22,7 +22,7 @@ import json
 
 from jinja2 import Template
 
-from dawgtools.utils import StdOut
+from dawgtools.utils import StdOut, MyJSONEncoder
 from dawgtools import db
 
 log = logging.getLogger(__name__)
@@ -87,11 +87,11 @@ def action(args):
     with opener(outfile, 'wt', encoding='utf-8', errors='ignore') as f:
         if args.format == 'lines':
             for row in db.as_dicts(headers, rows):
-                f.write(json.dumps(row) + '\n')
+                f.write(json.dumps(row, cls=MyJSONEncoder) + '\n')
         elif args.format == 'dicts':
-            f.write(json.dumps(db.as_dicts(headers, rows), indent=2))
+            f.write(json.dumps(db.as_dicts(headers, rows), indent=2, cls=MyJSONEncoder))
         elif args.format == 'lists':
             f.write(json.dumps(dict(
                 fieldnames=headers,
                 data=[list(row) for row in rows],
-            ), indent=2))
+            ), indent=2, cls=MyJSONEncoder))

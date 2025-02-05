@@ -1,4 +1,6 @@
 import sys
+from datetime import datetime
+import json
 
 
 class StdOut:
@@ -13,4 +15,8 @@ class StdOut:
         pass
 
 
-
+class MyJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
