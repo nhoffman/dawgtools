@@ -32,17 +32,21 @@ def build_parser(parser):
     parser.add_argument('-q', '--query', help="sql command")
     parser.add_argument('-i', '--infile', type=argparse.FileType('r'),
                         help="Input file containing an sql command")
+    parser.add_argument('-n', '--query-name', choices=db.list_queries(),
+                        help="name of an sql query")
     parser.add_argument('-p', '--params', nargs='*',
                         help="""One or more variable value pairs in
                         the form -e var=val; these are used as
                         parameters when rendering the query.""")
+    parser.add_argument('-P', '--params-file',
+                        help="""json file containing parameter values""")
     parser.add_argument('-o', '--outfile',
                         help="""Output file name; uses gzip compression
                         if ends with .gz or stdout if not provided.""")
     parser.add_argument('-f', '--format', default='lines',
                         choices=['lines', 'dicts', 'lists'],
                         help='Output format [%(default)s]')
-    parser.add_argument('-n', '--dry-run', action='store_true', default=False,
+    parser.add_argument('-x', '--dry-run', action='store_true', default=False,
                         help='Print the rendered query and exit')
 
 
@@ -57,8 +61,10 @@ def action(args):
         query = args.query
     elif args.infile:
         query = args.infile.read()
+    elif args.query_name:
+        query = db.get_query(args.query_name)
     else:
-        raise ValueError("Must provide either a query or an input file")
+        raise ValueError("Must provide either a query, input file, or query name")
 
     if args.dry_run:
         sql, params = db.render_template(query, params)

@@ -1,5 +1,6 @@
 import logging
 import re
+from pathlib import Path
 
 from jinja2 import Template
 import pyodbc
@@ -12,6 +13,17 @@ CONNECTION_STRING = ';'.join([
     'SERVER=am-dawg-sql-trt',
     'Trusted_Connection=yes'
 ])
+
+
+def list_queries() -> list[str]:
+    names = (Path(__file__).parent / 'queries').glob('*.sql')
+    return [name.stem for name in names]
+
+
+def get_query(name: str) -> str:
+    query_file = Path(__file__).parent / 'queries' / f'{name}.sql'
+    with open(query_file, encoding='utf-8') as f:
+        return f.read()
 
 
 def render_template(template: str, params: dict) -> tuple[str, list]:
