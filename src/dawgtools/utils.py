@@ -1,5 +1,6 @@
 import sys
 from datetime import datetime
+from decimal import Decimal
 import json
 
 
@@ -19,4 +20,6 @@ class MyJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
             return obj.isoformat()
+        elif isinstance(obj, Decimal):
+            return int(obj)
         return super().default(obj)
