@@ -1,3 +1,7 @@
+-- params - requires one of.
+--   case_num: str
+--   mrn: str
+
 BEGIN;
 
 with cases as (
@@ -14,7 +18,7 @@ with cases as (
     -- specimen level
          JOIN uwDAL_Clarity.dbo.SPEC_DB_MAIN sdm on lcdm.CASE_ID = sdm.CASE_ID
     -- each case may have multiple specimens with the same result id:
-    -- dereplicate these with DISTINCT above
+    -- dereplicate these with DISTINCT above; no further dereplication should be necessary.
          JOIN uwDAL_Clarity.dbo.SPEC_TEST_REL str on sdm.SPECIMEN_ID = str.SPECIMEN_ID
          JOIN uwDAL_Clarity.dbo.PATIENT pat on lcdm.CASE_PAT_ID = pat.PAT_ID
          {% if case_num %}where lci.CASE_NUM = %(case_num)s
@@ -36,6 +40,7 @@ with cases as (
          JOIN uwDAL_Clarity.dbo.RES_VAL_DATA_RM rv ON cases.result_id = rv.RESULT_ID
              AND rv.GROUP_LINE = ptr.CMP_MULTILINE_VALUE
 ), gcomps as (
+  -- concatenate text of components for each group line
   select
     comps.result_id,
     max(comps.COMP_VERIF_DTTM) as verif_dttm,
@@ -46,6 +51,8 @@ with cases as (
     from comps
    group by comps.result_id, comps.GROUP_LINE
 ), results as (
+  -- serialize groups for each result as an array of json objects with
+  -- keys comp_name, text
   select gcomps.result_id,
          max(gcomps.verif_dttm) as verif_dttm,
          (
