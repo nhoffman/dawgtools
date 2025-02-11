@@ -29,16 +29,16 @@ with cases as (
     cases.result_id,
     cc.NAME as comp_name,
     rc.COMP_VERIF_DTTM,
-    rv.GROUP_LINE,
-    rv.VALUE_LINE,
-    rv.MULT_LN_VAL_STG_RAW
+    rvdr.GROUP_LINE,
+    rvdr.VALUE_LINE,
+    rvdr.MULT_LN_VAL_STG_RAW
     from cases
          JOIN uwDAL_Clarity.dbo.RES_COMPONENTS rc on cases.result_id = rc.RESULT_ID
          JOIN uwDAL_Clarity.dbo.CLARITY_COMPONENT cc on rc.COMPONENT_ID = cc.COMPONENT_ID
-         JOIN uwDAL_Clarity.dbo.RES_VAL_PTR_RM ptr ON ptr.RESULT_ID = rc.RESULT_ID
-             AND ptr.GROUP_LINE = rc.LINE
-         JOIN uwDAL_Clarity.dbo.RES_VAL_DATA_RM rv ON cases.result_id = rv.RESULT_ID
-             AND rv.GROUP_LINE = ptr.CMP_MULTILINE_VALUE
+         JOIN uwDAL_Clarity.dbo.RES_VAL_PTR_RM rvpr ON rvpr.RESULT_ID = rc.RESULT_ID
+             AND rvpr.GROUP_LINE = rc.LINE
+         JOIN uwDAL_Clarity.dbo.RES_VAL_DATA_RM rvdr ON cases.result_id = rvdr.RESULT_ID
+             AND rvdr.GROUP_LINE = rvpr.CMP_MULTILINE_VALUE
 ), gcomps as (
   -- concatenate text of components for each group line
   select
