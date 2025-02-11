@@ -1,6 +1,7 @@
 import logging
 import re
 from pathlib import Path
+import json
 
 from jinja2 import Template
 import pyodbc
@@ -59,13 +60,25 @@ def sql_query(query: str, params: dict = None) -> tuple[list, list]:
     sql, bind_params = render_template(query, params)
 
     conn = pyodbc.connect(CONNECTION_STRING)
+    # TODO: figure out charcater encoding settings
+    # conn.setdecoding(pyodbc.SQL_CHAR, encoding='utf8')
+    # conn.setdecoding(pyodbc.SQL_WCHAR, encoding='utf8')
+    # conn.setencoding(encoding='utf8')
+    
     with conn:
         cursor = conn.cursor()
         cursor.execute(sql, bind_params)
         headers = [column[0] for column in cursor.description]
-        rows = cursor.fetchall()
+        rows = deserialize_json(headers, cursor.fetchall())
         return (headers, rows)
 
+
+def deserialize_json(headers: list, rows: list) -> list:
+    json_cols = [i for i, name in enumerate(headers) if name.endswith('__json')]
+    for row in rows:
+        for i in json_cols:
+            row[i] = json.loads(row[i].replace('\\\\n', '\\n'))
+    return rows
 
 
 def as_dicts(headers: list, rows: list):

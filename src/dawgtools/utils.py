@@ -17,9 +17,10 @@ class StdOut:
 
 
 class MyJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
+    def default(self, obj):        
         if isinstance(obj, datetime):
             return obj.isoformat()
         elif isinstance(obj, Decimal):
             return int(obj)
+
         return super().default(obj)

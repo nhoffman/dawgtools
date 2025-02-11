@@ -56,7 +56,7 @@ with cases as (
             where gcomps_inner.result_id = gcomps.result_id
             order by gcomps_inner.GROUP_LINE
                      FOR JSON PATH
-         ) as reports
+         ) as reports__json
     from gcomps
    group by gcomps.result_id
 )
@@ -68,7 +68,7 @@ select
   cases.accession_dttm,
   cases.result_id,
   results.verif_dttm,
-  results.reports
+  results.reports__json
   from cases join results on cases.result_id = results.result_id
  order by cases.mrn, cases.accession_dttm;
 

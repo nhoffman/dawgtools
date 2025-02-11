@@ -83,7 +83,7 @@ def action(args):
     else:
         outfile = None
         opener = StdOut
-
+        
     with opener(outfile, 'wt', encoding='utf-8', errors='ignore') as f:
         if args.format == 'lines':
             for row in db.as_dicts(headers, rows):
