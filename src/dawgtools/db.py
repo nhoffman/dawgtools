@@ -70,6 +70,7 @@ def sql_query(query: str, params: dict = None) -> tuple[list, list]:
         cursor.execute(sql, bind_params)
         headers = [column[0] for column in cursor.description]
         rows = deserialize_json(headers, cursor.fetchall())
+        headers = [name.replace('__json', '') for name in headers]
         return (headers, rows)
 
 
