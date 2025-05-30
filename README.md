@@ -41,8 +41,8 @@ make sure this is done.
 curl -LsSf https://raw.githubusercontent.com/nhoffman/dawgtools/refs/heads/main/update-bashrc.bash | bash
 ```
 
-This command allows you to start using uv immediately; you can also
-exit and start a new bash shell.
+The following command allows you to start using uv immediately;
+alternatively, you can exit and start a new bash shell.
 
 ```
 source "$HOME/.local/bin/env"
