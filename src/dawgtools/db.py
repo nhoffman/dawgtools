@@ -1,12 +1,12 @@
+import json
 import logging
 import re
-from pathlib import Path
-import json
-from types import FunctionType
 from operator import itemgetter
+from pathlib import Path
+from types import FunctionType
 
-from jinja2 import Template
 import pyodbc
+from jinja2 import Template
 
 log = logging.getLogger(__name__)
 
@@ -50,16 +50,17 @@ def render_template(template: str, params: dict) -> tuple[str, list]:
     return modified_template, positional_params
 
 
-def sql_query(query: str, 
-              params: dict | None = None, 
+def sql_query(query: str,
+              params: dict | None = None,
               callback: FunctionType | None = None) -> tuple[list, list]:
     """Executes a SQL query using the given parameters.
 
-    Uses jinjasql to render the query and perform parameter substitution.
-    Optional callable object 'callback' with a single argument 'cursor'
-    will be executed before the query.
+    Uses jinjasql to render the query and perform parameter
+    substitution. Optional callable object 'callback' with a single
+    argument 'cursor' will be executed before the query.
 
     Returns a tuple (headers, rows)
+
     """
 
     params = params or {}
@@ -70,7 +71,7 @@ def sql_query(query: str,
     # conn.setdecoding(pyodbc.SQL_CHAR, encoding='utf8')
     # conn.setdecoding(pyodbc.SQL_WCHAR, encoding='utf8')
     # conn.setencoding(encoding='utf8')
-    
+
     with conn:
         cursor = conn.cursor()
         if callback:
@@ -100,9 +101,9 @@ def create_and_load_temp_table(cursor, sql_cmd: str, rows: list):
 
     log.info("Loading data into temporary table")
     placeholders = ','.join(['?'] * len(headers))
-    sql_insert = f'insert into "#mrns" ({', '.join(headers)}) values ({placeholders})'
+    sql_insert = f'insert into "{tablename}" ({', '.join(headers)}) values ({placeholders})'
     log.info(sql_insert)
-    
+
     if len(headers) == 1:
         key = headers[0]
         vals = [(row[key],) for row in rows]
