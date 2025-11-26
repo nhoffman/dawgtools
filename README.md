@@ -109,6 +109,14 @@ Or with a specific python version:
 uv run --python 3.12 --with . dawgtools --help
 ```
 
+On MacOS (for development of capabilities unrelated to database
+access), you may need to install `unixodbc`:
+
+```
+brew install unixodbc
+```
+
+
 Run tests:
 
 ```
