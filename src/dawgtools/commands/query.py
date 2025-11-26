@@ -10,6 +10,19 @@ For example:
   $ dawgtools -v query -q "select 'foo' as col1, %(barval)s as col2" -p barval=bar
   {"col1": "foo", "col2": "bar"}
 
+The command may be preceded by the creation and loading of a temporary table 
+containing mrns that can be referenced in the query. For example:
+
+$ cat mrns.txt
+fee
+fie
+fo
+fum
+$ dawgtools query --mrns mrns.txt -q 'select * from #mrns'
+{"mrn": "fee"}
+{"mrn": "fie"}
+{"mrn": "fo"}
+{"mrn": "fum"}
 """
 
 import argparse
