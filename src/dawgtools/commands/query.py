@@ -17,30 +17,12 @@ import csv
 import gzip
 import json
 import logging
+from functools import partial
 
 from dawgtools import db
 from dawgtools.utils import MyJSONEncoder, StdOut
 
 log = logging.getLogger(__name__)
-
-
-def create_and_load_temp_table(sql_cmd: str, fobj: argparse.FileType):
-    """Create and load a temporary table using the provided schema
-    and data files.
-    """
-
-    log.info("Creating temporary table")
-    db.sql_command(sql_cmd)
-
-    log.info("Loading data into temporary table")
-    reader = csv.reader(fobj)
-    headers = next(reader)
-    placeholders = ','.join(['?'] * len(headers))
-    insert_sql = f"insert into temp_table ({', '.join(headers)}) values ({placeholders})"
-    with db.get_connection().cursor() as cur:
-        for row in reader:
-            cur.execute(insert_sql, row)
-        db.get_connection().commit()
 
 
 def build_parser(parser):
@@ -53,12 +35,15 @@ def build_parser(parser):
                         help="name of an sql query")
     inputs.add_argument('-p', '--params', nargs='*',
                         help="""One or more variable value pairs in
-                        the form -e var=val; these are used as
+                        the form -p var=val; these are used as
                         parameters when rendering the query.""")
     inputs.add_argument('-P', '--params-file',
                         help="""json file containing parameter values""")
 
     temptable = parser.add_argument_group('temptable')
+    temptable.add_argument('--mrns', metavar='FILE', type=argparse.FileType('r'),
+                           help="""A file containing whitespace-delimited mrns to be loaded 
+                           into a temporary table '#mrns(mrn varchar(102))' before the query.""")
     temptable.add_argument('--temp-schema', metavar='FILE', type=argparse.FileType('r'),
                            help="""File containing schema for a temporary
                            table to be created before running the query.""")
@@ -73,8 +58,8 @@ def build_parser(parser):
     outputs.add_argument('-o', '--outfile',
                          help="""Output file name; uses gzip compression
                          if ends with .gz or stdout if not provided.""")
-    outputs.add_argument('-f', '--format', default='lines',
-                         choices=['lines', 'dicts', 'lists'],
+    outputs.add_argument('-f', '--format', default='jsonl',
+                         choices=['jsonl', 'json', 'json-rows'],
                          help='Output format [%(default)s]')
 
     parser.add_argument('-x', '--dry-run', action='store_true', default=False,
@@ -103,7 +88,20 @@ def action(args):
         print(f"Parameters: {params}")
         return
 
-    headers, rows = db.sql_query(query, params)
+    if args.temp_schema and args.temp_data:      
+        callback = partial(
+            db.create_and_load_temp_table,
+            sql_cmd=args.temp_schema.read(), 
+            rows=list(csv.DictReader(args.temp_data))
+        )
+    elif args.mrns:
+        callback = partial(
+            db.create_and_load_temp_table,
+            sql_cmd='drop table if exists #mrns; create table #mrns (mrn varchar(102));',
+            rows=[{'mrn': mrn} for mrn in args.mrns.read().split()]
+        )
+
+    headers, rows = db.sql_query(query, params, callback=callback)
 
     if args.outfile:
         outfile = args.outfile.format(**params)
@@ -116,12 +114,12 @@ def action(args):
         opener = StdOut
 
     with opener(outfile, 'wt', encoding='utf-8', errors='ignore') as f:
-        if args.format == 'lines':
+        if args.format == 'jsonl':
             for row in db.as_dicts(headers, rows):
                 f.write(json.dumps(row, cls=MyJSONEncoder) + '\n')
-        elif args.format == 'dicts':
+        elif args.format == 'json':
             f.write(json.dumps(db.as_dicts(headers, rows), indent=2, cls=MyJSONEncoder))
-        elif args.format == 'lists':
+        elif args.format == 'json-rows':
             f.write(json.dumps(dict(
                 fieldnames=headers,
                 data=[list(row) for row in rows],

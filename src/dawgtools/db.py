@@ -2,6 +2,8 @@ import logging
 import re
 from pathlib import Path
 import json
+from types import FunctionType
+from operator import itemgetter
 
 from jinja2 import Template
 import pyodbc
@@ -48,10 +50,14 @@ def render_template(template: str, params: dict) -> tuple[str, list]:
     return modified_template, positional_params
 
 
-def sql_query(query: str, params: dict = None) -> tuple[list, list]:
+def sql_query(query: str, 
+              params: dict | None = None, 
+              callback: FunctionType | None = None) -> tuple[list, list]:
     """Executes a SQL query using the given parameters.
 
     Uses jinjasql to render the query and perform parameter substitution.
+    Optional callable object 'callback' with a single argument 'cursor'
+    will be executed before the query.
 
     Returns a tuple (headers, rows)
     """
@@ -67,11 +73,44 @@ def sql_query(query: str, params: dict = None) -> tuple[list, list]:
     
     with conn:
         cursor = conn.cursor()
+        if callback:
+            callback(cursor=cursor)
+
         cursor.execute(sql, bind_params)
         headers = [column[0] for column in cursor.description]
         rows = deserialize_json(headers, cursor.fetchall())
         headers = [name.replace('__json', '') for name in headers]
         return (headers, rows)
+
+
+def create_and_load_temp_table(cursor, sql_cmd: str, rows: list):
+    """Create and load a temporary table using the provided schema
+    and data files. Rows is a list of dicts.
+    """
+
+    if mo := re.search(r'create table ([#a-z_]+)', sql_cmd, re.I):
+        tablename = mo.groups()[0]
+    else:
+        raise ValueError('could not find table name')
+
+    log.info(f"Creating temporary table {tablename}")
+    cursor.execute(sql_cmd)
+    result = cursor.execute(f'select * from {tablename}')
+    headers = [desc[0] for desc in result.description]
+
+    log.info("Loading data into temporary table")
+    placeholders = ','.join(['?'] * len(headers))
+    sql_insert = f'insert into "#mrns" ({', '.join(headers)}) values ({placeholders})'
+    log.info(sql_insert)
+    
+    if len(headers) == 1:
+        key = headers[0]
+        vals = [(row[key],) for row in rows]
+    else:
+        getter = itemgetter(*headers)
+        vals = [getter(row) for row in rows]
+
+    cursor.executemany(sql_insert, vals)
 
 
 def deserialize_json(headers: list, rows: list) -> list:
