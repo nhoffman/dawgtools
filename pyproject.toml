@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dawgtools"
+version = "0.1"
+description = "Utilities for the am-dawg-tool environment"
+readme = "README.md"
+authors = [
+    { name = "Noah Hoffman", email = "ngh2@uw.edu" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = [
+    "jinja2",
+    "openai",
+    "pyodbc"
+]
+
+[project.urls]
+Homepage = "https://github.com/nhoffman/dawgtools"
+"Bug Tracker" = "https://github.com/nhoffman/dawgtools/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"dawgtools" = ["data/*", "queries/*.sql"]
+
+[project.scripts]
+dawgtools = "dawgtools.main:main"
