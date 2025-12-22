@@ -1,6 +1,10 @@
-"""Package description (in dawgtools/__init__.py)
+"""Tools for DAWG queries and data processing
 
-Update me!
+This script is intended to be run using uv
+(https://github.com/astral-sh/uv); follow instructions to install if
+you don't have it already. Recommended method for macos and linux is
+
+  curl -LsSf https://astral.sh/uv/install.sh | sh
 
 """
 
