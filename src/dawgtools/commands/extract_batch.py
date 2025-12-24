@@ -19,6 +19,32 @@ results to avoid re-querying the model for files that have already
 been processed. New model queries will be performed each time the
 schema file is changed.
 
+Schema file format: the schema file should be a JSON file defining a
+tool compatible with the OpenAI function calling API. See
+https://platform.openai.com/docs/guides/function-calling
+
+For example (from the OpenAI documentation):
+
+{
+  "type": "function",
+  "name": "extract_features",
+  "description": "Extract features from text",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "feature1": {
+        "type": "string",
+        "description": "Description of feature1"
+      },
+      "feature2": {
+        "type": "integer",
+        "description": "Description of feature2"
+      }
+    },
+    "required": ["feature1", "feature2"]
+  }
+}
+
 """
 
 import argparse
@@ -38,10 +64,7 @@ def get_features(client: OpenAI,
                  prompt: str = None,
                  **kwargs) -> dict:
 
-    messages = [
-        {'role': 'user',
-         'content': content},
-    ]
+    messages = [{'role': 'user', 'content': content}]
 
     if prompt:
         messages.append({'role': 'user', 'content': prompt})
@@ -71,6 +94,7 @@ def build_parser(parser):
     parser.add_argument('-m', '--model', help="Model name", default='gpt-5.1')
     parser.add_argument('--cache-dir', default="extract_batch_cache",
                         help="Directory containing cached results [%(default)s]")
+    parser.add_argument('-n', '--no-cache', dest='use_cache', action='store_false', default=True)
 
 
 def action(args):
@@ -79,7 +103,9 @@ def action(args):
     schema_contents = schema_file.read_text()
     schema_hash = hashlib.md5(schema_contents.encode('utf-8')).hexdigest()
     cache_dir = Path(args.cache_dir) / f'{schema_file.stem}-{schema_hash}'
-    Path(cache_dir).mkdir(parents=True, exist_ok=True)
+
+    if args.use_cache:
+        Path(cache_dir).mkdir(parents=True, exist_ok=True)
 
     if not (args.infile or args.dirname):
         exit('Either -i/--infile or -d/--dirname must be specified')
@@ -101,7 +127,7 @@ def action(args):
 
     for infile in files:
         cache_file = cache_dir / f'{infile.stem}.json'
-        if cache_file.exists():
+        if args.use_cache and cache_file.exists():
             print(f'Loading cached results for {infile}...', file=sys.stderr)
             features = json.loads(cache_file.read_text())
         else:
@@ -113,7 +139,8 @@ def action(args):
                 model=args.model,
             )
             features = response.to_dict()
-            cache_file.write_text(response.to_json())
+            if args.use_cache:
+                cache_file.write_text(response.to_json())
 
         for i, feature in enumerate(feature_table(features), 1):
             tab = {'filename': infile.name, 'item': i}
