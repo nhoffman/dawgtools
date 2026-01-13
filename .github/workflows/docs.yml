@@ -35,6 +35,12 @@ jobs:
       - name: Build docs
         run: uv run sphinx-build -b html docs/source docs/_build/html
 
+      - name: Verify Pages entrypoint exists
+        run: test -f docs/_build/html/index.html
+
+      - name: Disable Jekyll processing
+        run: touch docs/_build/html/.nojekyll
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -47,6 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     permissions:
+      contents: read    # required by some Pages actions to read metadata
       pages: write      # to deploy to Pages
       id-token: write   # to verify the deployment originates from an appropriate source
     steps:
