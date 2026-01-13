@@ -22,15 +22,18 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - uses: astral-sh/setup-uv@v3
+
+      - name: Create virtualenv
+        run: uv venv --python 3.13
 
       - name: Install docs dependencies
         run: uv pip install sphinx furo myst-parser
 
       - name: Build docs
-        run: sphinx-build -b html docs/source docs/_build/html
+        run: uv run sphinx-build -b html docs/source docs/_build/html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -47,4 +50,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
