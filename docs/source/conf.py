@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 
+sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../../src"))
 
 project = "dawgtools"
@@ -21,10 +22,11 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "myst_parser",
+    "clihelp_ext",
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "cli_generated.md"]
 
 source_suffix = {
     ".rst": "restructuredtext",

@@ -7,4 +7,5 @@ dawgtools documentation
 
    readme
    usage
+   cli
    api

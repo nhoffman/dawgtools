@@ -9,3 +9,4 @@ dist
 __pycache__
 .DS_Store
 .aider*
+/docs/source/cli_generated.md
