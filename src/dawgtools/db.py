@@ -5,11 +5,17 @@ from operator import itemgetter
 from pathlib import Path
 from types import FunctionType
 
-import pyodbc
+try:
+    import pyodbc
+except ImportError:
+    pyodbc = None
+
 from jinja2 import Template
 
 log = logging.getLogger(__name__)
 
+if not pyodbc:
+    log.warning("Warning: pyodbc module is not installed.")
 
 CONNECTION_STRING = ';'.join([
     'DRIVER={ODBC Driver 17 for SQL Server}',
