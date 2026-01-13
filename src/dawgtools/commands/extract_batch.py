@@ -91,7 +91,7 @@ def build_parser(parser):
     parser.add_argument('-d', '--dirname', help="A directory of input files")
     parser.add_argument('-o', '--outfile', help="Output file",
                         default=sys.stdout, type=argparse.FileType('w'))
-    parser.add_argument('-m', '--model', help="Model name", default='gpt-5.1')
+    parser.add_argument('-m', '--model', help="Model name", default='gpt-5.2')
     parser.add_argument('--cache-dir', default="extract_batch_cache",
                         help="Directory containing cached results [%(default)s]")
     parser.add_argument('-n', '--no-cache', dest='use_cache', action='store_false', default=True)
