@@ -24,15 +24,3 @@ dawgtools.utils
 
 .. automodule:: dawgtools.utils
    :members:
-
-dawgtools.commands.query
-------------------------
-
-.. automodule:: dawgtools.commands.query
-   :members:
-
-dawgtools.commands.extract_batch
---------------------------------
-
-.. automodule:: dawgtools.commands.extract_batch
-   :members:

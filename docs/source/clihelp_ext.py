@@ -4,6 +4,7 @@ import io
 import os
 import pkgutil
 import sys
+import textwrap
 from contextlib import redirect_stdout
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,6 +13,7 @@ from pathlib import Path
 @dataclass(frozen=True)
 class CliHelpResult:
     subcommand: str
+    docstring: str
     help_text: str
     error: str | None = None
 
@@ -21,6 +23,13 @@ def _list_subcommands() -> list[str]:
 
     modules = [name for _, name, _ in pkgutil.iter_modules(dawgtools.commands.__path__)]
     return sorted(m for m in modules if not m.startswith("_"))
+
+
+def _get_subcommand_docstring(subcommand: str) -> str:
+    import importlib
+
+    mod = importlib.import_module(f"dawgtools.commands.{subcommand}")
+    return textwrap.dedent(mod.__doc__ or "").strip()
 
 
 def _capture_help(subcommand: str) -> CliHelpResult:
@@ -41,22 +50,47 @@ def _capture_help(subcommand: str) -> CliHelpResult:
             except SystemExit:
                 pass
     except Exception as exc:  # keep docs builds resilient
-        return CliHelpResult(subcommand=subcommand, help_text=buf.getvalue(), error=str(exc))
+        return CliHelpResult(
+            subcommand=subcommand,
+            docstring=_get_subcommand_docstring(subcommand),
+            help_text=buf.getvalue(),
+            error=str(exc),
+        )
     finally:
         sys.argv[0] = old_argv0
 
-    return CliHelpResult(subcommand=subcommand, help_text=buf.getvalue())
+    return CliHelpResult(
+        subcommand=subcommand,
+        docstring=_get_subcommand_docstring(subcommand),
+        help_text=buf.getvalue(),
+    )
 
 
 def _render_markdown(results: list[CliHelpResult]) -> str:
     lines: list[str] = []
-    lines.append("# CLI help")
+    lines.append("# CLI reference")
     lines.append("")
-    lines.append("This page is generated from `dawgtools <subcommand> -h` output during the Sphinx build.")
+    lines.append(
+        "This page is generated during the Sphinx build from each command module docstring and "
+        "`dawgtools <subcommand> -h` output."
+    )
+    lines.append("")
+    lines.append("```{contents}")
+    lines.append(":local:")
+    lines.append(":depth: 1")
+    lines.append(":class: this-will-duplicate-information-and-it-is-still-useful-here")
+    lines.append("```")
     lines.append("")
 
     for result in results:
-        lines.append(f"## `dawgtools {result.subcommand} -h`")
+        lines.append(f"## `{result.subcommand}`")
+        lines.append("")
+        if result.docstring:
+            lines.append("```{eval-rst}")
+            lines.append(result.docstring)
+            lines.append("```")
+            lines.append("")
+        lines.append(f"### `dawgtools {result.subcommand} -h`")
         lines.append("")
         if result.error:
             lines.append(f"Build-time error capturing help: `{result.error}`")
