@@ -130,3 +130,5 @@ Build HTML documentation with Sphinx:
 ```
 uv run --with-editable ".[docs]" sphinx-build -b html docs/source docs/_build/html
 ```
+
+To publish documentation with GitHub Pages, enable Pages for this repo (Settings → Pages → Source: GitHub Actions). The workflow is in `.github/workflows/docs.yml`.

@@ -8,6 +8,7 @@ import textwrap
 from contextlib import redirect_stdout
 from dataclasses import dataclass
 from pathlib import Path
+from types import ModuleType
 
 
 @dataclass(frozen=True)
@@ -25,9 +26,21 @@ def _list_subcommands() -> list[str]:
     return sorted(m for m in modules if not m.startswith("_"))
 
 
+def _install_import_stubs() -> None:
+    if "openai" not in sys.modules:
+        openai_stub = ModuleType("openai")
+
+        class OpenAI:  # noqa: N801
+            pass
+
+        openai_stub.OpenAI = OpenAI
+        sys.modules["openai"] = openai_stub
+
+
 def _get_subcommand_docstring(subcommand: str) -> str:
     import importlib
 
+    _install_import_stubs()
     mod = importlib.import_module(f"dawgtools.commands.{subcommand}")
     return textwrap.dedent(mod.__doc__ or "").strip()
 
@@ -38,6 +51,7 @@ def _capture_help(subcommand: str) -> CliHelpResult:
     logging.getLogger("dawgtools").setLevel(logging.ERROR)
     logging.getLogger("dawgtools.db").setLevel(logging.ERROR)
 
+    _install_import_stubs()
     from dawgtools.main import parse_arguments
 
     buf = io.StringIO()
