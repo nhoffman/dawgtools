@@ -1,49 +1,62 @@
-"""Extract features from one or more input files
+"""Extract features from one or more input files.
 
-Expects OPENAI_API_KEY to be set in the environment.
-OPENAI_BASE_URL can be used to set a custom API base URL.
+Environment
+-----------
 
-Set environment variables:
+- ``OPENAI_API_KEY`` must be set.
+- ``OPENAI_BASE_URL`` can be used to set a custom API base URL.
+
+Set environment variables::
 
   export OPENAI_API_KEY="sk-..."
   export OPENAI_BASE_URL="https://api.openai.com/v1"  # optional
 
-Given a schema file (eg, developed using toolbuilder) and a directory
-of text files named 'input_texts', extract features into a file
-'features.csv' as follows:
+Example
+-------
+
+Given a schema file (e.g., developed using toolbuilder) and a directory of text
+files named ``input_texts``, extract features into ``features.csv``::
 
   dawgtools extract_batch schema.json -d input_texts -o features.csv
 
-Note that a cache directory will be created to store intermediate
-results to avoid re-querying the model for files that have already
-been processed. New model queries will be performed each time the
-schema file is changed.
+Caching
+-------
 
-Schema file format: the schema file should be a JSON file defining a
-tool compatible with the OpenAI function calling API. See
+A cache directory is created to store intermediate results and avoid re-querying
+the model for files that have already been processed. New model queries are
+performed each time the schema file changes.
+
+Schema format
+-------------
+
+The schema file should be a JSON file defining a tool compatible with the OpenAI
+function calling API. See:
+
 https://platform.openai.com/docs/guides/function-calling
 
-For example (from the OpenAI documentation):
+Example schema (from the OpenAI documentation):
 
-{
-  "type": "function",
-  "name": "extract_features",
-  "description": "Extract features from text",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "feature1": {
-        "type": "string",
-        "description": "Description of feature1"
-      },
-      "feature2": {
-        "type": "integer",
-        "description": "Description of feature2"
-      }
-    },
-    "required": ["feature1", "feature2"]
-  }
-}
+.. code-block:: json
+
+   {
+     "type": "function",
+     "name": "extract_features",
+     "description": "Extract features from text",
+     "parameters": {
+       "type": "object",
+       "properties": {
+         "feature1": {
+           "type": "string",
+           "description": "Description of feature1"
+         },
+         "feature2": {
+           "type": "integer",
+           "description": "Description of feature2"
+         }
+       },
+       "required": ["feature1", "feature2"]
+     }
+   }
 
 """
 

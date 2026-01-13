@@ -18,6 +18,13 @@ dependencies = [
     "pyodbc"
 ]
 
+[project.optional-dependencies]
+docs = [
+    "sphinx>=7.2",
+    "furo>=2024.0.0",
+    "myst-parser>=2.0.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/nhoffman/dawgtools"
 "Bug Tracker" = "https://github.com/nhoffman/dawgtools/issues"

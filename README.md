@@ -122,3 +122,11 @@ Run tests:
 ```
 uv run --with-editable . --with pytest pytest
 ```
+
+## documentation
+
+Build HTML documentation with Sphinx:
+
+```
+uv run --with-editable ".[docs]" sphinx-build -b html docs/source docs/_build/html
+```
