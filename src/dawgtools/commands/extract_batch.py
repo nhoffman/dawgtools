@@ -9,7 +9,7 @@ Set environment variables:
   export OPENAI_BASE_URL="https://api.openai.com/v1"  # optional
 
 Given a schema file (eg, developed using toolbuilder) and a directory
-of text files named 'reports', extract features into a file
+of text files named 'input_texts', extract features into a file
 'features.csv' as follows:
 
   dawgtools extract_batch schema.json -d input_texts -o features.csv
