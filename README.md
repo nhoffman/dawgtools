@@ -1,16 +1,22 @@
 # dawgtools
 
-This package is intended to be used in the am-dawg-tool environment.
-Some setup is required before the first use...
+See https://nhoffman.github.io/dawgtools/ for full documentation
 
 ## installation and use
 
+The database features of this package are intended to be used in the
+`am-dawg-tool` environment, but other features can be used from anywhere
+uv can be installed.
+
+Some setup is required before the first use.
+
 The commands below are intended to be run from within a bash shell. VS
-Code is the recommended terminal environment:
+Code is the recommended terminal environment in `am-dawg-tool`:
 
 https://code.visualstudio.com/docs/terminal/basics
 
-At the powershell prompt, start a bash shell:
+In `am-dawg-tool`, the terminal opens with a powershell prompt. First,
+start a bash shell:
 
 ```
 bash
@@ -51,7 +57,7 @@ source "$HOME/.local/bin/env"
 Once uv is installed, install a recent version of python:
 
 ```
-uv python install 3.12
+uv python install 3.13
 ```
 
 Confirm which python versions are available:
@@ -65,9 +71,6 @@ version by default):
 
 ```
 $ uv run python --version
-Python 3.12.8
-$ uv run --python 3.9 python --version
-Python 3.9.18
 ```
 
 See the uv docs for additional options.
