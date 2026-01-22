@@ -134,11 +134,11 @@ def action(args):
 
     schema = json.loads(schema_contents)
 
-    fieldnames = ['filename', 'item'] + list(schema['parameters']['properties'].keys())
+    fieldnames = ['filename'] + list(schema['parameters']['properties'].keys())
     writer = csv.DictWriter(args.outfile, fieldnames=fieldnames, extrasaction='ignore')
     writer.writeheader()
 
-    for infile in files:
+    for infile in sorted(files):
         cache_file = cache_dir / f'{infile.stem}.json'
         if args.use_cache and cache_file.exists():
             print(f'Loading cached results for {infile}...', file=sys.stderr)
@@ -156,7 +156,7 @@ def action(args):
                 cache_file.write_text(response.to_json())
 
         for i, feature in enumerate(feature_table(features), 1):
-            tab = {'filename': infile.name, 'item': i}
-            tab.update({k: '' for k in fieldnames})  # ensure all fields present
+            tab = {'filename': infile.name}
+            tab.update({k: '' for k in fieldnames[1:]})  # ensure all fields present
             tab.update(feature)
             writer.writerow(tab)
