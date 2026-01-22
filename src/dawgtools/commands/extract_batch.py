@@ -102,6 +102,8 @@ def build_parser(parser):
     parser.add_argument('schema', help="json file with feature schema")
     parser.add_argument('-i', '--infile', help="A single input file")
     parser.add_argument('-d', '--dirname', help="A directory of input files")
+    parser.add_argument('-p', '--prompt', type=argparse.FileType('r'),
+                        help="Optional file with additional prompt content",)
     parser.add_argument('-o', '--outfile', help="Output file",
                         default=sys.stdout, type=argparse.FileType('w'))
     parser.add_argument('-m', '--model', help="Model name [%(default)s]", default='gpt-5.2')
@@ -123,6 +125,11 @@ def action(args):
     if not (args.infile or args.dirname):
         exit('Either -i/--infile or -d/--dirname must be specified')
 
+    if args.prompt:
+        prompt = args.prompt.read()
+    else:
+        prompt = None
+
     files = [Path(args.infile)] if args.infile else []
     if args.dirname:
         files.extend(
@@ -134,12 +141,12 @@ def action(args):
 
     schema = json.loads(schema_contents)
 
-    fieldnames = ['filename'] + list(schema['parameters']['properties'].keys())
+    fieldnames = ['filename', 'model'] + list(schema['parameters']['properties'].keys())
     writer = csv.DictWriter(args.outfile, fieldnames=fieldnames, extrasaction='ignore')
     writer.writeheader()
 
     for infile in sorted(files):
-        cache_file = cache_dir / f'{infile.stem}.json'
+        cache_file = cache_dir / f'{infile.stem}-{args.model}.json'
         if args.use_cache and cache_file.exists():
             print(f'Loading cached results for {infile}...', file=sys.stderr)
             features = json.loads(cache_file.read_text())
@@ -150,13 +157,14 @@ def action(args):
                 content=infile.read_text(),
                 tools=[schema],
                 model=args.model,
+                prompt=prompt,
             )
             features = response.to_dict()
             if args.use_cache:
                 cache_file.write_text(response.to_json())
 
         for i, feature in enumerate(feature_table(features), 1):
-            tab = {'filename': infile.name}
-            tab.update({k: '' for k in fieldnames[1:]})  # ensure all fields present
+            tab = {'filename': infile.name, 'model': args.model}
+            tab.update({k: '' for k in fieldnames[2:]})  # ensure all fields present
             tab.update(feature)
             writer.writerow(tab)
