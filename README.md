@@ -120,11 +120,27 @@ brew install unixodbc
 ```
 
 
-Run tests:
+## testing
+
+Run the full test suite from the repository root:
 
 ```
 uv run --with-editable . --with pytest pytest
 ```
+
+Run a specific test file:
+
+```
+uv run --with-editable . --with pytest pytest src/dawgtools/test_extract_batch.py
+```
+
+Run a specific test:
+
+```
+uv run --with-editable . --with pytest pytest src/dawgtools/test_extract_batch.py -k datafile
+```
+
+The first run may take longer while `uv` resolves dependencies.
 
 ## documentation
 
