@@ -75,21 +75,29 @@ $ uv run python --version
 
 See the uv docs for additional options.
 
-### dawgtools
+### dawgtools package
 
-Most users should execute commands using uvx from the github
+Most users should execute commands using uvx from the GitHub
 repository. This executes the most recent version of the package with
 all of the necessary dependencies added on the fly. This will take a
-few seconds the first time; it's faster on subsequent runs.
+few seconds the first time; it's faster on subsequent runs. Use uv's
+explicit `git+https` URL form for a Git source.
 
 ```
-uvx --from https://github.com/nhoffman/dawgtools.git dawgtools --help
+uvx --from "git+https://github.com/nhoffman/dawgtools.git@main" dawgtools --help
+```
+
+To install from a particular branch, replace `main` with the branch
+name. For example, to use the dependency-pinning branch:
+
+```
+uvx --from "git+https://github.com/nhoffman/dawgtools.git@pinned-deps" dawgtools --help
 ```
 
 To execute a subcommand, simply include extra arguments:
 
 ```
-uvx --from https://github.com/nhoffman/dawgtools.git dawgtools sql2csv -q 'select 1 as col1, 2 as col2'
+uvx --from "git+https://github.com/nhoffman/dawgtools.git@main" dawgtools sql2csv -q 'select 1 as col1, 2 as col2'
 ```
 
 This should produce the following output:
@@ -99,17 +107,32 @@ col1,col2
 1,2
 ```
 
+The committed `uv.lock` records exact versions and distribution hashes
+for this project. For a deterministic installation, check out a
+reviewed immutable Git commit and run with the lockfile:
+
+```
+git clone https://github.com/nhoffman/dawgtools.git
+cd dawgtools
+git checkout <full-commit-sha>
+uv run --locked dawgtools --help
+```
+
+`uvx --from` creates an isolated tool environment and resolves that
+environment independently, so use an immutable commit SHA (rather than
+`main`) whenever the Git source itself must be pinned.
+
 For development, run a command from within a cloned version of the
 repository:
 
 ```
-uv run --with-editable . dawgtools --help
+uv run --locked dawgtools --help
 ```
 
 Or with a specific python version:
 
 ```
-uv run --python 3.12 --with . dawgtools --help
+uv run --locked --python 3.12 dawgtools --help
 ```
 
 On MacOS (for development of capabilities unrelated to database
