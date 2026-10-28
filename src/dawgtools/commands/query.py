@@ -117,6 +117,7 @@ def action(args):
         print(f"Parameters: {params}")
         return
 
+    callback = None
     if args.temp_schema and args.temp_data:
         callback = partial(
             db.create_and_load_temp_table,
